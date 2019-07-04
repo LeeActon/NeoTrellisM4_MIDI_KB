@@ -3,8 +3,7 @@
 
 ChordSelector chordSelector;
 
-
-unsigned short int ChordSelector::chordNotes[] =
+unsigned short int ChordSelector::chordNotes[CHORD_COUNT] =
 	{
 	//    110           00000000
 	//    109           87654321
@@ -24,7 +23,7 @@ unsigned short int ChordSelector::chordNotes[] =
 		(B010 << 8) | B00100100,  // HalfDiminished7th
 	};
 
-long int ChordSelector::chordColors[] =
+long int ChordSelector::chordColors[CHORD_COUNT] =
 	{
 	//    RRGGBB
 		0x000000,
@@ -41,43 +40,40 @@ long int ChordSelector::chordColors[] =
 		0xFF0000,
 		0xFF00FF,
 		0xFFFF00,
-		0xFFFFFF,
 	};
 
 void ChordSelector::Press()
-	{
-	if (this->chordsPlaying > 0)
-		return;
-
-	chordIndex++;
-
-	if (chordIndex >= (sizeof(chordNotes) / sizeof(chordNotes[0])))
-		chordIndex = 0;
-
-	Serial.print("chordIndex: ");
-	Serial.print(this->chordIndex);
-	Serial.print(" notes: root");
+  	{
+    if (this->chordsPlaying > 0)
+      return;
   
-  int notes = chordNotes[this->chordIndex];
-  int semitone = 0;
-  while (notes != 0)
-    {
-    semitone++;
-    if ((notes & 1) != 0)
-      {
-      Serial.print(" + ");
-      Serial.print(semitone);
-      }
-    notes >>= 1;
-    }
-  Serial.println();
+    StateButton::Press();
+  
+  	Serial.print("chord: ");
+  	Serial.print(this->state);
+  	Serial.print(" notes: root");
+    
+    int notes = chordNotes[this->state];
+    int semitone = 0;
+    while (notes != 0)
+        {
+        semitone++;
+        if ((notes & 1) != 0)
+            {
+            Serial.print(" + ");
+            Serial.print(semitone);
+            }
+        notes >>= 1;
+        }
+    Serial.println();
+  	}
 
-	
-	SetColor(chordColors[this->chordIndex]);
-	}
 void ChordSelector::Chord(int rootNote, bool on)
 	{
 	int note = rootNote;
+  if (sharp)
+      note++;
+      
 	if (on)
 		{
 		neoTrellisM4.noteOn(note, 64);
@@ -92,7 +88,7 @@ void ChordSelector::Chord(int rootNote, bool on)
 	neoTrellisM4.sendMIDI(); // send any pending MIDI messages
 	delay(chordDelay);
 
-	int notes = chordNotes[this->chordIndex];
+	int notes = chordNotes[this->state];
 	while (notes != 0)
 		{
 		note++;

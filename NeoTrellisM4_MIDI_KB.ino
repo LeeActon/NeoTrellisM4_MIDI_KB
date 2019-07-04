@@ -8,14 +8,9 @@
 #include "MIDIControl.h"
 #include "PitchBlend.h"
 
-static Adafruit_ADXL343 accel = Adafruit_ADXL343(1, &Wire1);
+static ADXL343 accel = ADXL343(1, &Wire1);
 
-int xCC = 1;  //choose a CC number to control with x axis tilting of the board. 1 is mod wheel, for example.
-
-int last_xbend = 0;
-int last_ybend = 0;
-
-Adafruit_NeoTrellisM4 neoTrellisM4 = Adafruit_NeoTrellisM4();
+NeoTrellisM4 neoTrellisM4 = NeoTrellisM4();
 
 Note C3Note(MIDI_C(3));
 Note D3Note(MIDI_D(3));
@@ -49,6 +44,17 @@ Note G6Note(MIDI_G(6));
 Note A6Note(MIDI_A(6));
 Note B6Note(MIDI_B(6));
 
+#if 0
+long int sharpModifierColors[2] =
+{
+    0x000000,
+    0x110000,
+};
+
+StateButton sharpModifier(2, 0, sharpModifierColors);
+#endif
+bool sharp = false;
+
 Button* rgpButtonMatrix[BUTTON_ROWS][BUTTON_COLUMNS] =
 	{
 		{ &chordSelector, &C6Note, &D6Note, &E6Note, &F6Note, &G6Note, &A6Note, &B6Note},
@@ -72,7 +78,6 @@ void setup()
 	Serial.begin(115200);
 
 	neoTrellisM4.begin();
-	//neoTrellisM4.setBrightness(80);
 
 	for (int row = 0; row < BUTTON_ROWS; row++)
 		{
@@ -97,6 +102,7 @@ unsigned long msLastReport = 0;
 float prevX = 0;
 float prevY = 0;
 float prevZ = 0;
+
 void loop()
 	{
 	neoTrellisM4.tick();
@@ -125,6 +131,8 @@ void loop()
 			if (pButton != NULL)
 				pButton->Release();
 			}
+
+     //sharp = (sharpModifier.GetState() != 0);
 		}
 
 	sensors_event_t event;
@@ -156,8 +164,11 @@ void loop()
 #endif
 		}
 
-	pMIDIControlX->Update(event.acceleration.x);
-	pMIDIControlY->Update(event.acceleration.y);
+    if (pMIDIControlX != NULL)
+        pMIDIControlX->Update(event.acceleration.x);
+    if (pMIDIControlY != NULL)
+        pMIDIControlY->Update(event.acceleration.y);
+        
 	neoTrellisM4.sendMIDI();
 
 	delay(10);

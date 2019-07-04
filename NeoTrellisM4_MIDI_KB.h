@@ -6,4 +6,4 @@
 #define BUTTON_COLUMNS Adafruit_NeoTrellisM4::BUTTON_COLUMNS
 
 extern NeoTrellisM4 neoTrellisM4;
-//extern bool sharp;
+extern bool sharp;
