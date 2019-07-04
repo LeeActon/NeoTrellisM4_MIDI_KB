@@ -44,7 +44,6 @@ Note G6Note(MIDI_G(6));
 Note A6Note(MIDI_A(6));
 Note B6Note(MIDI_B(6));
 
-#if 0
 long int sharpModifierColors[2] =
 {
     0x000000,
@@ -52,7 +51,6 @@ long int sharpModifierColors[2] =
 };
 
 StateButton sharpModifier(2, 0, sharpModifierColors);
-#endif
 bool sharp = false;
 
 Button* rgpButtonMatrix[BUTTON_ROWS][BUTTON_COLUMNS] =
@@ -60,7 +58,7 @@ Button* rgpButtonMatrix[BUTTON_ROWS][BUTTON_COLUMNS] =
 		{ &chordSelector, &C6Note, &D6Note, &E6Note, &F6Note, &G6Note, &A6Note, &B6Note},
 		{ NULL,           &C5Note, &D5Note, &E5Note, &F5Note, &G5Note, &A5Note, &B5Note},
 		{ NULL,           &C4Note, &D4Note, &E4Note, &F4Note, &G4Note, &A4Note, &B4Note},
-		{ NULL,           &C3Note, &D3Note, &E3Note, &F3Note, &G3Note, &A3Note, &B3Note},
+		{ &sharpModifier, &C3Note, &D3Note, &E3Note, &F3Note, &G3Note, &A3Note, &B3Note},
 	};
 
 PitchBlend pitchBlend("pitch blend (x)");
@@ -70,8 +68,8 @@ MIDIControl midiControlVolume(7, 0, 127, "vol (y)");
 MIDIControl midiControlBalance(8, 0, 127, "bal (y)");
 MIDIControl midiControlExpression(0x0B, 0, 127, "expression (y)");
 
-MIDIControl* pMIDIControlX = &pitchBlend;
-MIDIControl* pMIDIControlY = &midiControlModulation;
+MIDIControl* pMIDIControlX = NULL; // &pitchBlend;
+MIDIControl* pMIDIControlY = NULL; // &midiControlModulation;
 
 void setup()
 	{
@@ -132,7 +130,7 @@ void loop()
 				pButton->Release();
 			}
 
-     //sharp = (sharpModifier.GetState() != 0);
+     sharp = (sharpModifier.GetState() != 0);
 		}
 
 	sensors_event_t event;
