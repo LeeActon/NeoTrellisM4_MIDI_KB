@@ -1,3 +1,4 @@
+#include "NeoTrellisM4.h"
 #include <Adafruit_ADXL343.h>
 #include "NeoTrellisM4_MIDI_KB.h"
 

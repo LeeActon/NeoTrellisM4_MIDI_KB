@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ChordSelector.h"
+
 #define MIDI_C4 60
 #define MIDI_D4 62
 #define MIDI_E4 64

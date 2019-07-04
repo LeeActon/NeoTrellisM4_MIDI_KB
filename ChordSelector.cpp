@@ -1,3 +1,4 @@
+#include "NeoTrellisM4.h"
 #include "ChordSelector.h"
 
 ChordSelector chordSelector;
